@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Cercle – A Visualization for Spotify</title>
+        <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Lobster" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        
+        
+        <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/p5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/addons/p5.dom.min.js"></script>
+       
+        <script src="js/welcomeSketch.js"></script> 
+        
+        
+        <!-- favicon stuff -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/manifest.json">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="theme-color" content="#ffffff">
+        
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+
+            body {
+                font-family: 'Montserrat', sans-serif;
+                background: #373737;
+            }
+
+            section {
+                position: relative;
+            }
+
+            #loginSection, #loggedin {
+                /*display: none;*/
+            }
+            
+            .text-overflow {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 500px;
+            }
+            
+            .hue-input {
+                padding: 40px 0;
+                width: 500px;
+                margin-top: 5px;
+                border: 1px solid;
+                background-image: url(../img/noiseBG.png);
+            }
+            
+            #hueURL {
+                padding: 13px;
+                border: 0px;
+                margin: 5px;
+            }
+
+            #getHueInfo {
+                padding: 10px;
+                margin: 5px;
+                display: inline-block;
+                color: #000;
+                background: #fff;
+                cursor: pointer;
+            }
+            
+            #hueOK {
+                display: inline-block;
+                padding: 10px;
+                margin: 5px;
+                background: #fff;
+                color: #000;
+                cursor: pointer;
+            }
+            
+            canvas {
+                position: fixed !important;
+            }
+
+        /* --------------------- Login Screen --------------------- */
+
+        section#loginSection {
+            height: 100vh;
+        }
+
+        #loginSection #login {
+            top: 20vh;
+            margin: auto;
+            position: absolute;
+            height: auto;
+            left: 0;
+            right: 0;
+            width: 500px;
+            text-align: center;
+            color: #fff;
+            z-index: 9;
+        }
+
+        #login h1 {
+            font-family: 'Lobster', cursive;
+            color: #1ED760;
+            font-size: 100px;
+        }
+        #login h2 { padding-bottom: 20px; }
+
+        #login a { color: #fff; }
+
+        .loginOption {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid;
+            margin-top: 5px;
+        }
+
+        .hidden { display: none; }
+
+        /* --------------------- Media --------------------- */
+
+            
+       @media all and (max-width: 510px), (max-device-width: 720px) and (orientation: portrait) {
+                #login h1 {
+                    font-size: 10vw;
+                }
+                #login h2 {
+                    font-size: 5vw;
+                    padding-top: 15px;
+                }
+                #loginSection #login {
+                    width: 90%;
+                }
+                .hue-input {
+                    width: auto;
+                }
+                .loginOption {
+                    padding: 40px;
+                    margin-top: 20px;
+                    font-size: 4vw;
+                }
+               #login a {
+                   font-size: 5vw;
+               }
+           
+            }
+            
+            @media (max-device-width: 720px) and (orientation: landscape) {
+                section#loginSection {
+                    overflow: show;
+                }
+                #loginSection #login {
+                    top: 0;
+                    bottom: 0;
+                    margin: auto;
+                    display: table;
+                }
+                .hue-input {
+                    width: auto;
+                }
+    
+            }
+
+
+        
+        </style>
+
+    </head>
+
+    <body>
+        
+        <div class="container">
+            <!-- Start :: Login -->
+            <section id="loginSection">
+                <div id="login">
+                    <h1>Hi there!</h1>
+                    <h2>This application provides a visualization of your music playback through Spotify with visual effects. Thereby the colour tone of the current songs is analyzed and illustrated. Have fun!</h2>
+                    <div class="loginOption" id="loginCasual">Click here to login</div>
+                    <div class="loginOption" id="loginAudioInputHue">Click here to login and use Hue light source</div>
+                    <div class="hidden hue-input">
+                      HUE URL: <input id="hueURL" type="text" value="put Hue url here"> <div id="getHueInfo">?</div><div id="hueOK">OK</div>
+                    </div>
+                    <br>
+                    <div class="showLogin hidden">
+                        <a href="/login_hue" class="btn btn-primary">Log in with Spotify</a>
+                    </div>
+                </div>
+            </section>
+            
+            </div>
+        
+            <script>
+                $(document).ready(function(){
+                    
+                    $('.loginOption').on('click', function(){
+                        console.log($(this).attr('id'));
+                        var option = $(this).attr('id');
+                        if(option === "loginCasual") {
+                            $('.hue-input').addClass('hidden');
+                            $('.showLogin').empty().append('<a href="/login" class="btn btn-primary">Log in with Spotify</a>');
+                            $('.showLogin').removeClass('hidden');
+                        }
+                        if(option === "loginAudioInputHue"){
+                            $('.showLogin').empty().append('<a href="/login_hue" class="btn btn-primary">Log in with Spotify</a>');
+                            $('.hue-input').removeClass('hidden');
+                            //$('.showLogin').addClass('hidden');
+                        }
+                    });
+                    
+                   
+                    $('#getHueInfo').on('click', function(){
+                        window.open('https://www.developers.meethue.com/documentation/getting-started');
+                    });
+                    
+                    $('#hueOK').on('click', function(){
+                        var hueLink = $('#hueURL').val();
+                        sessionStorage.setItem("hueConnection", hueLink);
+                        
+                        if(hueLink){
+                            if (window.XMLHttpRequest)
+                            {
+                                var http = new XMLHttpRequest();
+                                http.open('GET', hueLink, true);
+
+                                http.onreadystatechange = function()
+                                {
+                                    if(http.readyState == 4)
+                                    {
+                                        if(http.status==200)
+                                        {
+                                            console.log(JSON.stringify(JSON.parse(http.responseText), null, '\t'));
+                                            $('.showLogin').removeClass('hidden');
+                                        }
+                                        else
+                                        {
+                                            console.log("Error "+http.status);
+                                        }
+                                    }
+                                }
+                                http.send('{"on":true, "sat":254, "bri":254,"hue": 25555}');
+                            }
+                            //return false;
+                        }
+                    });
+                    
+
+                    
+                });
+            </script>   
+        
+       
+  </body>
+</html>
+

@@ -1,0 +1,402 @@
+/* --------------------- General --------------------- */
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #000;
+}
+
+section {
+    position: relative;
+}
+
+
+h2 {
+    padding: 20px 20px 80px 20px;
+}
+h3 {
+    font-family: 'Lobster', cursive;
+    padding: 10px 0;
+    font-size: 30px;
+}
+
+
+
+
+#loginSection, #loggedin {
+    /*display: none;*/
+}
+.text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 500px;
+}
+
+
+/* --------------------- Login Screen --------------------- */
+
+section#loginSection {
+    height: 100vh;
+    overflow: hidden;
+}
+
+#loginSection #login {
+    top: 20vh;
+    margin: auto;
+    position: absolute;
+    height: auto;
+    left: 0;
+    right: 0;
+    width: 500px;
+    text-align: center;
+    color: #fff;
+}
+
+#login h1 {
+    font-family: 'Lobster', cursive;
+    color: #1ED760;
+    font-size: 100px;
+}
+#login h2 { padding: 0 0 20px 0 !important; }
+
+#login a { color: #fff; }
+
+.loginOption {
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid;
+    margin-top: 5px;
+}
+
+.hidden { display: none !important; }
+
+/* --------------------- End Login Screen --------------------- */
+
+
+
+
+
+
+
+
+
+/* --------------------- Application Screen --------------------- */
+
+/* ---------------------First Section --------------------- */
+
+section#visualization{
+    height: 100vh;
+    max-height: 100vh;
+    /*background: #245;*/
+    color: #fff;
+    -webkit-box-shadow: 0px 60px 60px 18px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 60px 60px 18px rgba(0,0,0,1);
+    box-shadow: 0px 60px 60px 18px rgba(0,0,0,1);
+}
+ 
+.on-top {
+    z-index: 99;
+}
+
+#user-img {
+    border: 2px solid #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    float: right;
+    margin: 30px 35px;
+    position: absolute;
+    right: 0;
+}
+
+img#userImage {
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    border-radius: 50%;
+    filter: url(#duotone3);
+}
+
+.noFilterImg {
+    filter: none !important;
+}
+
+
+
+/* --------------------- Player Interaction --------------------- */
+
+.interaction_menu {
+    margin: 30px 110px 30px 0px;
+    position: absolute;
+    right: 0;
+}
+
+.interaction {
+    width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+   /* background-color: darkgray; */
+    display: inline-block;
+    margin: 20px 5px;
+    cursor: pointer;
+}
+
+.button_hidden { display: none; }
+#pause_button { background-image: url(../icon/pause.svg); }
+#play_button { background-image: url(../icon/play.svg); }
+#next_button { background-image: url(../icon/next.svg); }
+#prev_button { background-image: url(../icon/prev.svg); }
+#whatisthis_button { background-image: url(../icon/info.svg); }
+#mic_button { background-image: url(../icon/microphone.svg); }
+#mic_button_off { background-image: url(../icon/noMicrophone.svg); }
+
+
+
+
+
+
+
+/* --------------------- Second Section --------------------- */
+
+section#visualizationInfo{
+    position: relative;
+    background-image: url(../img/noiseBG.png);
+    background-color: #333;
+    color: #fff;
+    -webkit-box-shadow: inset 0px -150px 110px -30px rgba(0,0,0,1);
+    -moz-box-shadow: inset 0px -150px 110px -30px rgba(0,0,0,1);
+    box-shadow: inset 0px -150px 110px -30px rgba(0,0,0,1);
+}
+
+
+#listening-to {
+    border-radius: 15px;
+    border: 1px solid #fff;
+    width: auto;
+    text-align: center;
+    margin: auto;
+    padding: 20px 20px;
+    display: table;
+    color: #fff;
+    text-shadow: 2px 2px 2px rgba(119, 119, 119, 1);
+    -webkit-box-shadow: 0px 4px 33px 0px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 4px 33px 0px rgba(0,0,0,1);
+    box-shadow: 0px 4px 33px 0px rgba(0,0,0,1);
+}
+
+
+/* --------------------- D3.js FUN --------------------- */
+
+#overallValue {
+    text-align: center;
+    display: table;
+    /*width: 100vw;*/
+    padding: 70px 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#overallValueText {
+    width: 500px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding-top: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+
+#allthemvalues {
+    display: none;
+    padding: 170px 40px 0 40px;
+    width: 60%;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#leftValues {
+    text-align: left;
+    float: left;
+/*                border: 1px solid red;    */
+/*    display: table;*/
+}
+
+#rightValues {
+    text-align: right;
+    float: right;
+/*                border: 1px solid blue;   */
+/*    display: table; */
+}
+
+
+.displayCurrentValues {
+/*                border: 1px solid;    */
+    margin: 0 30px 60px 30px;
+    /*min-height: 200px;*/
+    /*display: table;*/
+}
+
+.displayCurrentValues p {
+    padding: 0 0 30px 0;
+}
+
+
+
+#slideUpWrapper {
+    /*width: 100vw;*/
+    clear: both;
+    padding: 70px 0 40px 0;
+}
+
+#slideUp_button{
+    text-align: center;
+    background: url(../icon/slideUp.svg);
+    background-repeat: no-repeat;
+    width: 50px;
+    height: 50px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
+
+
+/* Partylights */
+
+#hue-profile{
+    display: table;
+    padding: 40px;
+    position: absolute;
+    float: left;
+}
+
+#hueURL {
+    width: 300px;
+    background: #fff;
+    height: 30px;
+    border: 1px solid #000;
+}
+
+
+
+
+
+/* --------------------- MEDIA --------------------- */
+
+@media (max-width: 600px){
+    #overallValueText {
+        width: auto;
+       
+    }
+}
+
+@media (max-width: 1300px), (max-device-width: 1300px){
+    #leftValues,
+    #rightValues {
+        text-align: center;
+        float: none;
+    }
+}
+
+
+
+@media (max-device-width: 720px) and (orientation: portrait) {
+    
+    .interaction_menu {
+        position: absolute;
+        right: 0;
+        left: 0;
+        bottom: 250px;
+        margin: auto;
+        text-align: center;
+    }
+    
+    .interaction {
+        width: 100px;
+        height: 100px;
+    }
+    
+    #allthemvalues {
+        font-size: 30px;
+    }
+    
+    #listening-to {
+        font-size: 50px;
+    }
+    h3 {
+        padding: 50px 0;
+        font-size: 70px;
+    }
+    #slideUp_button{
+        width: 100px;
+        height: 100px;
+    }
+    
+    #user-img {
+        width: 140px;
+        height: 140px;
+    }
+    
+    img#userImage {
+        width: 140px;
+        height: 140px;
+    }
+
+  
+}
+
+@media (max-device-width: 720px) and (orientation: landscape) {
+     .interaction_menu {
+        position: absolute;
+        right: 0;
+        left: 0;
+        bottom: 10px;
+        margin: auto;
+        text-align: center;
+    }
+    
+    .interaction {
+        width: 60px;
+        height: 60px;
+    }
+    
+    #allthemvalues {
+        font-size: 30px;
+    }
+    
+    #listening-to {
+        font-size: 50px;
+    }
+    h3 {
+        padding: 50px 0;
+        font-size: 70px;
+    }
+    #slideUp_button{
+        width: 100px;
+        height: 100px;
+    }
+    
+    #user-img {
+        width: 90px;
+        height: 90px;
+    }
+    
+    img#userImage {
+        width: 90px;
+        height: 90px;
+    }
+
+    
+}

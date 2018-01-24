@@ -1,0 +1,692 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Cercle – A Visualization for Spotify</title>
+        <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Lobster" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+        <!--<link rel="stylesheet" type="text/css" href="css/loaders.min.css">-->
+        
+        
+        <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.12.2/d3.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/p5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/addons/p5.dom.min.js"></script>
+       
+        
+        <script src="js/party.js"></script>
+        <script src="js/sketchWithout.js"></script> 
+
+        <script>
+            var hueAccess = sessionStorage.getItem("hueConnection");
+            var acctok = sessionStorage.accTok;
+            
+        </script>
+
+        <script>
+            
+            // Opera 8.0+
+            var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+            // Firefox 1.0+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+
+            // Safari 3.0+ "[object HTMLElementConstructor]" 
+            var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+            // Internet Explorer 6-11
+            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+            // Edge 20+
+            var isEdge = !isIE && !!window.StyleMedia;
+
+            // Chrome 1+
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+            // Blink engine detection
+            var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+
+        
+            
+            
+            //$.getScript("js/sketch.js");
+        </script>
+
+    </head>
+
+    <body>
+            <div id="svg-filter" style="display: none">
+            <svg>
+                <filter id="duotone">
+                    <feColorMatrix type="matrix" result="grayscale"
+                      values="1 0 0 0 0
+                              1 0 0 0 0
+                              1 0 0 0 0
+                              0 0 0 1 0" />
+
+                    <feComponentTransfer color-interpolation-filters="sRGB" result="duotone_magenta_gold">
+                      <feFuncR type="table" tableValues="0.7411764706 0.9882352941"></feFuncR>
+                      <feFuncG type="table" tableValues="0.0431372549 0.7333333333"></feFuncG>
+                      <feFuncB type="table" tableValues="0.568627451 0.05098039216"></feFuncB>
+                      <feFuncA type="table" tableValues="0 1"></feFuncA>
+                    </feComponentTransfer> 
+               </filter>
+                
+                
+                <filter id="duotone2">
+                    <feColorMatrix type="matrix" result="grayscale"
+                      values="1 0 0 0 0
+                              1 0 0 0 0
+                              1 0 0 0 0
+                              0 0 0 1 0" />
+
+                    <feComponentTransfer color-interpolation-filters="sRGB" result="duotone_magenta_gold">
+                      <feFuncR type="table" tableValues="0.23529412 0.9882352941"></feFuncR>
+                      <feFuncG type="table" tableValues="0.70196078 0.7333333333"></feFuncG>
+                      <feFuncB type="table" tableValues="0.44313725 0.05098039216"></feFuncB>
+                      <feFuncA type="table" tableValues="0 1"></feFuncA>
+                    </feComponentTransfer> 
+                </filter>
+  
+                
+                <filter id="duotone3">
+                    <feColorMatrix type="matrix" result="grayscale"
+                      values="1 0 0 0 0
+                              1 0 0 0 0
+                              1 0 0 0 0
+                              0 0 0 1 0" />
+
+                    <feComponentTransfer color-interpolation-filters="sRGB" result="duotone_magenta_gold">
+                      <feFuncR type="table" tableValues="0.09803921568"></feFuncR>
+                      <feFuncG type="table" tableValues="0.09803921568 0.7333333333"></feFuncG>
+                      <feFuncB type="table" tableValues="0.43921568627 0.05098039216"></feFuncB>
+                      <feFuncA type="table" tableValues="0 1"></feFuncA>
+                    </feComponentTransfer> 
+                </filter>
+            </svg>
+            </div>
+            
+            
+            <!-- App :: Action -->  
+            <div id="loggedin" style="display: block;">
+                
+                <section id="visualization" class="on-top">
+                    
+                <div id="user-profile">
+                </div>
+                <div class="values"></div>
+                <div id="playerInteraction">
+                    <div class="interaction_menu" id="id_interaction_menu">
+                        <div class="interaction" id="prev_button"></div>
+                        <div class="interaction" id="pause_button"></div>
+                        <div class="interaction" id="play_button"></div>
+                        <div class="interaction" id="next_button"></div>
+                        <div class="interaction" id="whatisthis_button"></div>
+                        <!--<div class="interaction" id="mic_button"></div>-->
+                        
+                    </div>
+                    <div id="user-img"><img id="userImage"/></div>
+                </div>
+                <div id="sketch-holder"></div>
+                    
+                    
+                </section>
+                
+
+                
+                <section id="visualizationInfo">
+   
+                    <div id="allthemvalues">
+                        <div id="listening-to"></div>
+                        <div id="overallValueText">
+                        There's a good chance that the song you're listening to, represents the effect of these colors:
+
+                        </div>
+                        <div id="overallValue"></div>
+                        
+                         <br>
+                        <h2 style="text-align: center">here are some other interesting values:</h2>
+                        <div>
+                        <div id="leftValues">
+                            <div class="displayCurrentValues" id="currentDance">
+                                <h3>Danceability</h3>
+                                <p><span></span>%
+                                    <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+
+                            <div class="displayCurrentValues" id="currentEnergy">
+                                <h3>Energy</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+
+                            <div class="displayCurrentValues" id="currentValence">
+                                <h3>Valence</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+                        </div>
+
+                        <div id="rightValues">
+                            <div class="displayCurrentValues displayCurrentValuesRight" id="currentAcousticness">
+                                <h3>Acousticness</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+
+                            <div class="displayCurrentValues displayCurrentValuesRight" id="currentInstrumentalness">
+                                <h3>Instrumentalness</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+
+                            <div class="displayCurrentValues displayCurrentValuesRight" id="currentLiveness">
+                                <h3>Liveness</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+
+                            <div class="displayCurrentValues displayCurrentValuesRight" id="currentSpeechiness">
+                                <h3>Speechiness</h3>
+                                <p><span></span>%
+                                <br> This is the resulting colour tone:
+                                </p>
+                            </div>
+                        </div>
+                        </div>
+                        <div id="slideUpWrapper">
+                            <div id="slideUp_button"></div>
+                        </div>
+                    </div>
+                    
+                </section>
+            </div>
+        
+
+       <script>
+            if(isFirefox === true){
+                  $('#userImage').addClass('noFilterImg'); 
+            }
+           $('#whatisthis_button').on('click', function(){
+                $('#allthemvalues').slideDown();
+                $('html, body').animate({ scrollTop: $('#allthemvalues').offset().top }, 800);
+            });
+                            
+            $('#slideUp_button').on('click', function(){
+                $('#allthemvalues').slideUp();
+            });
+           
+           
+           /* --------------------- D3 Fun --------------------- */
+            
+            
+            
+            /* Rot, Gelb, Orange, Blau, Gold, Grün */
+            var colorsDance = ["rgb(255,0,0)", "rgb(255,255,0)", "rgb(255,165,0)", "rgb(0,0,255)", "rgb(255,215,0)", "rgb(0, 255, 0)"];
+            
+            /* Rot, Schwarz, Gelb */
+            var colorsEnergyhigh = ["rgb(255,0,0)", "rgb(0,0,0)", "rgb(255,255,0)"];
+            
+            /* Grau, Weiß, Rosa */
+            var colorsEnergyless = ["rgb(128,128,128)", "rgb(255,255,255)", "rgb(255,192,203)"];
+            
+            /* Grün, Gelb, Gold, Orange */
+            var colorsValencePositive = ["rgb(0, 255, 0)", "rgb(255,255,0)", "rgb(255,215,0)", "rgb(255,165,0)"];
+           
+            /* Schwarz, Grau, Braun */
+            var colorsValenceNegative = ["rgb(0,0,0)", "rgb(128,128,128)", "rgb(170,121,66)"];
+            
+            /* Grün, Braun, Gold */
+            var colorsAcousticness = ["rgb(0, 255, 0)", "rgb(170,121,66)", "rgb(255,215,0)"];
+            
+            /* Violett, Silber */
+            var colorsInstrumentalness = ["rgb(128,0,128)", "rgb(192,192,192)"];
+            
+            /* Rot, Gold, Grün */
+            var colorsLiveness = ["rgb(255,0,0)", "rgb(255,215,0)", "rgb(0, 255, 0)"];
+            
+            /* Blau, Grau, Grün */
+            var colorsSpeechiness = ["rgb(0,0,255)", "rgb(128,128,128)", "rgb(0, 255, 0)"];
+           
+            /*
+            var danceValue = 0.0;
+            var energyValue = 0.0;
+            var valenceValue = 0.0;
+            var acousticValue = 0.0;
+            var instrumentalValue = 0.0;
+            var liveValue = 0.0;
+            var speechValue = 0.0;
+            */
+            var colorsEnergyUse;
+            var colorsValenceUse;
+           
+           function sliceNumber(num) {
+                num = num.toString();
+                num = num.slice(0, (num.indexOf("."))+4); 
+                Number(num);
+                return num;
+            }
+            
+           /*
+            var refreshvalues = setInterval(function(){ 
+            
+                if(danceValue != vdance){
+                    danceValue = vdance;
+                    energyValue = venergy;
+                    valenceValue = vvalence;
+                    acousticValue = vacoustic;
+                    instrumentalValue = vinstrument;
+                    liveValue = vlive;
+                    speechValue = vspeech;
+                    
+                    
+                    updateD3SVG();
+                }
+            
+                
+            
+            }, 6000);
+            */
+            var danceValue = 0.0;
+            var energyValue = 0.0;
+            var valenceValue = 0.0;
+            var acousticValue = 0.0;
+            var instrumentalValue = 0.0;
+            var liveValue = 0.0;
+            var speechValue = 0.0;
+            
+            
+            setInterval(function(){  
+                var testdance = Number(sessionStorage.fdance);
+                var testenegry = Number(sessionStorage.fenergy)
+                
+                if(danceValue != testdance || energyValue != testenegry){
+                    danceValue = Number(sessionStorage.fdance);
+                    energyValue = Number(sessionStorage.fenergy);
+                    valenceValue = Number(sessionStorage.fvalence);
+                    console.log(energyValue);
+                    acousticValue = Number(sessionStorage.facoustic);
+                    instrumentalValue = Number(sessionStorage.finstrumental);
+                    liveValue = Number(sessionStorage.flive);
+                    instrumentalValue = Number(sessionStorage.fspeech);
+                    
+                    getOverallColorTone();
+                    updateD3SVG();
+                    updateLights();
+                    sessionStorage.newSong = 'newSong';
+                }
+            }, 3000);
+           
+           
+            var colTone;
+            var colToneAdd;
+            var colValue;
+            var colEffect;
+           
+            function getOverallColorTone(){
+                if(sessionStorage.overCol === 'colorsDance'){
+                    colTone = colorsDance;
+                    sessionStorage.colcol = "fdance";
+                    colValue = danceValue;
+                    colEffect = "dance";
+
+                }
+                else if(sessionStorage.overCol === 'colorsEnergyhigh'){
+                    colTone = colorsEnergyhigh;
+                    sessionStorage.colcol = "fenergyhigh";
+                    colValue = energyValue;
+                    colEffect = "loud";
+                }
+                else if(sessionStorage.overCol === 'colorsEnergyless'){
+                    colTone = colorsEnergyless;
+                    sessionStorage.colcol = "fenergyless";
+                    colValue = energyValue;
+                    colEffect = "quiet";
+                }
+                else if(sessionStorage.overCol === 'colorsValencePositive'){
+                    colTone = colorsValencePositive;
+                    sessionStorage.colcol = "fvalencepos";
+                    colValue = valenceValue;
+                     colEffect = "pos";
+                }
+                else if(sessionStorage.overCol === 'colorsValenceNegative'){
+                    colTone = colorsValenceNegative;
+                    sessionStorage.colcol = "fvalenceneg";
+                    colValue = valenceValue;
+                    colEffect = "neg";
+                }
+                
+                (function(){
+                    if(sessionStorage.addCol === 'colorsAcousticness'){
+                        colToneAdd = colorsAcousticness;
+                    }
+                    if(sessionStorage.addCol === 'colorsInstrumentalness'){
+                        colToneAdd = colorsInstrumentalness;
+                    }
+                    if(sessionStorage.addCol === 'colorsLiveness'){
+                        colToneAdd = colorsLiveness;
+                    }
+                    if(sessionStorage.addCol === 'colorsSpeechiness'){
+                        colToneAdd = colorsSpeechiness;
+                    }
+                });
+            }
+            
+
+            function updateD3SVG(){
+            d3.selectAll("#overallValue svg, #currentDance svg, #currentEnergy svg, #currentValence svg, #currentAcousticness svg, #currentInstrumentalness svg, #currentLiveness svg, #currentSpeechiness svg").remove();
+            
+            var overallColors = colTone;
+            var overallValue = colValue;
+            
+     
+            var svgContainerDance = d3.select("#overallValue").selectAll("g").data(overallColors).enter().append("svg")
+            .attr('width', ((overallValue*100)+10) + 'px')
+            .attr('height', ((overallValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((overallValue*100)/2) + 'px')
+                  .attr("cy", ((overallValue*100)/2) + 'px')
+                  .attr("r",  ((overallValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+
+           
+            
+            
+            
+            /* Dance */
+            var svgContainerDance = d3.select("#currentDance").selectAll("g").data(colorsDance).enter().append("svg")
+            .attr('width', ((danceValue*100)+10) + 'px')
+            .attr('height', ((danceValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((danceValue*100)/2) + 'px')
+                  .attr("cy", ((danceValue*100)/2) + 'px')
+                  .attr("r",  ((danceValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+
+            $('#currentDance span').text(sliceNumber(danceValue*100));
+            
+            
+            
+            /* Energy */
+            if(energyValue >= 0.5){
+                colorsEnergyUse = colorsEnergyhigh;
+                $('#currentEnergy span').text(sliceNumber(energyValue*100));
+            }
+            else if(energyValue < 0.5){
+                colorsEnergyUse = colorsEnergyless;
+                $('#currentEnergy span').text(sliceNumber(energyValue*100));
+            }
+            
+            var svgContainerDance = d3.select("#currentEnergy").selectAll("g").data(colorsEnergyUse).enter().append("svg")
+            .attr('width', ((energyValue*100)+10) + 'px')
+            .attr('height', ((energyValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((energyValue*100)/2) + 'px')
+                  .attr("cy", ((energyValue*100)/2) + 'px')
+                  .attr("r",  ((energyValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+            
+            
+            
+            /* Valence */
+            if(valenceValue >= 0.5){
+                colorsValenceUse = colorsValencePositive;
+                $('#currentValence span').text(sliceNumber(valenceValue*100));
+            }
+            else if(valenceValue < 0.5){
+                colorsValenceUse = colorsValenceNegative;
+                $('#currentValence span').text(sliceNumber(valenceValue*100));
+            }
+            
+            var svgContainerDance = d3.select("#currentValence").selectAll("g").data(colorsValenceUse).enter().append("svg")
+            .attr('width', ((valenceValue*100)+10) + 'px')
+            .attr('height', ((valenceValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((valenceValue*100)/2) + 'px')
+                  .attr("cy", ((valenceValue*100)/2) + 'px')
+                  .attr("r",  ((valenceValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+
+
+            
+            
+            
+            /* Acousticness */
+            var svgContainerDance = d3.select("#currentAcousticness").selectAll("g").data(colorsAcousticness).enter().append("svg")
+            .attr('width', ((acousticValue*100)+10) + 'px')
+            .attr('height', ((acousticValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((acousticValue*100)/2) + 'px')
+                  .attr("cy", ((acousticValue*100)/2) + 'px')
+                  .attr("r",  ((acousticValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+            
+            $('#currentAcousticness span').text(sliceNumber(acousticValue*100));
+            
+
+            /* Instrumentalness */
+            var svgContainerDance = d3.select("#currentInstrumentalness").selectAll("g").data(colorsInstrumentalness).enter().append("svg")
+            .attr('width', ((instrumentalValue*100)+10) + 'px')
+            .attr('height', ((instrumentalValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((instrumentalValue*100)/2) + 'px')
+                  .attr("cy", ((instrumentalValue*100)/2) + 'px')
+                  .attr("r",  ((instrumentalValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+            
+            $('#currentInstrumentalness span').text(sliceNumber(instrumentalValue*100));
+            
+
+            /* Liveness */
+            var svgContainerDance = d3.select("#currentLiveness").selectAll("g").data(colorsLiveness).enter().append("svg")
+            .attr('width', ((liveValue*100)+10) + 'px')
+            .attr('height', ((liveValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((liveValue*100)/2) + 'px')
+                  .attr("cy", ((liveValue*100)/2) + 'px')
+                  .attr("r",  ((liveValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+            
+            $('#currentLiveness span').text(sliceNumber(liveValue*100));
+
+            
+            /* Speechiness */
+            var svgContainerDance = d3.select("#currentSpeechiness").selectAll("g").data(colorsSpeechiness).enter().append("svg")
+            .attr('width', ((speechValue*100)+10) + 'px')
+            .attr('height', ((speechValue*100)+10) + 'px');
+            var rectangle3 = svgContainerDance.append("circle")
+                  .attr("cx", ((speechValue*100)/2) + 'px')
+                  .attr("cy", ((speechValue*100)/2) + 'px')
+                  .attr("r",  ((speechValue*100)/2) + 'px')
+                  .style('fill', function (d) { return d });
+            
+            $('#currentSpeechiness span').text(sliceNumber(speechValue*100));
+
+            }
+           
+           
+            function updateLights(){
+                var hueColor;
+                var b;
+                 
+                if(colEffect === "dance"){ // Cheat Codes - Feels Great
+                    console.log(colEffect);
+                    b = '{"on":true, "hue":65280, "sat":254, "bri":255, "effect":"colorloop"}';
+                    sendLights(b);
+                }
+                if(colEffect === "loud") { // Architects - Doomsday
+                    b = '{"on":true, "hue":0, "sat":254, "bri":104, "effect":"none"}';
+                    sendLights(b);
+                }
+                if(colEffect === "quiet") { // Tyne - Crawl
+                    b = '{"on":true, "hue":56100, "sat":54, "bri":154, "effect":"none"}';
+                    sendLights(b);
+                }
+                if(colEffect === "pos") { // Robbie Williams - Run It Wild
+                    b = '{"on":true, "hue":25500, "sat":254, "bri":254,  "effect":"none"}';
+                    sendLights(b);
+                }
+                if(colEffect === "neg") { // Evanescence - My Immortal
+                    b = '{"on":true, "hue":46920, "sat":20, "bri":20, "effect":"none"}';
+                    sendLights(b);
+                }
+                
+                /*
+                
+                var rgbColorTone = colTone[0];
+                var rgbReplace1 = rgbColorTone.replace("rgb(","");
+                var rgbReplace2 = rgbReplace1.replace(")", "");
+                
+                var resRGB = rgbReplace2.split(",");
+                var _r = resRGB[0];
+                var _g = resRGB[1];
+                var _b = resRGB[2];
+                console.log(_r + _g + _b);
+                
+               var hslVal = rgbToHue(_r, _g, _b);
+               console.log(hslVal);
+             
+                
+                function rgbToHue(r, g, b){
+                    r /= 255, g /= 255, b /= 255;
+                    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+                    var h, s, l = (max + min) / 2;
+
+                    if(max == min){
+                        h = s = 0; // achromatic
+                    }else{
+                        var d = max - min;
+                        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                        switch(max){
+                            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                            case g: h = (b - r) / d + 2; break;
+                            case b: h = (r - g) / d + 4; break;
+                        }
+                        h /= 6;
+                    }
+                    
+                    var hue = h*182;
+                    var sat = s*128;
+                    var bri = l*128;
+                    sendLights(hue, sat, bri);
+                    //return [h, s, l];
+                    return [hue, sat, bri];
+                }
+                */
+                
+                function sendLights (b){
+                    /*
+                    var hu = Math.round(h);
+                    var sa = Math.round(s);
+                    var br = Math.round(b);
+                    */
+                    
+                    //var b = '{"on":true, "sat":' + sa + ', "bri":' + br + ',"hue":' + hu + '}';
+                    console.log(b);
+                    if (window.XMLHttpRequest)
+                        {
+                            var http = new XMLHttpRequest();
+                            http.open('PUT', hueAccess + '/state', true);
+
+                            http.onreadystatechange = function()
+                            {
+                                if(http.readyState == 4)
+                                {
+                                    if(http.status==200)
+                                    {
+                                        console.log(JSON.stringify(JSON.parse(http.responseText), null, '\t'));
+                                        //$('.showLogin').removeClass('hidden');
+                                    }
+                                    else
+                                    {
+                                        console.log("Error "+http.status);
+                                    }
+                                }
+                            }
+                            http.send(b);
+                        }
+                    
+                }
+            }
+           
+        </script>
+        
+        
+        
+        
+        <script>
+        /* BUTTON ACTION */
+            
+          $('#prev_button').on('click', function(){
+              console.log('prev');
+              $.ajax({
+                  url: 'https://api.spotify.com/v1/me/player/previous',
+                  type: 'post',
+                  headers: {
+                       'Authorization': 'Bearer ' + acctok
+                    },
+                    success: function(response) {
+              }});
+            });
+              
+           
+          $('#pause_button').on('click', function(){
+              console.log('pause');
+              $.ajax({
+                  url: 'https://api.spotify.com/v1/me/player/pause',
+                  type: 'put',
+                  headers: {
+                       'Authorization': 'Bearer ' + acctok
+                    },
+                    success: function(response) {
+                        /*
+                        $('.pause_button').addClass('hidden');
+                        $('.play_button').removeClass('hidden');
+                        */
+              }});
+            });
+          
+          $('#play_button').on('click', function(){
+              console.log('pause');
+              $.ajax({
+                  url: 'https://api.spotify.com/v1/me/player/play',
+                  type: 'put',
+                  headers: {
+                       'Authorization': 'Bearer ' + acctok
+                    },
+                    success: function(response) {
+                        /*
+                        $('.pause_button').removeClass('hidden');
+                        $('.play_button').addClass('hidden');
+                        */
+              }});
+            });
+          
+          $('#next_button').on('click', function(){
+              console.log('next');
+              $.ajax({
+                  url: 'https://api.spotify.com/v1/me/player/next',
+                  type: 'post',
+                  headers: {
+                       'Authorization': 'Bearer ' + acctok
+                    },
+                    success: function(response) {
+              }});
+            });
+          
+         
+        
+        
+        
+        </script>
+  </body>
+</html>
+
